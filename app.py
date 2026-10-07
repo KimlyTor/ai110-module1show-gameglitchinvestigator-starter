@@ -1,68 +1,14 @@
 import random
 import streamlit as st
 
-def get_range_for_difficulty(difficulty: str):
-    if difficulty == "Easy":
-        return 1, 20
-    if difficulty == "Normal":
-        return 1, 100
-    if difficulty == "Hard":
-        return 1, 50
-    return 1, 100
-
-
-def parse_guess(raw: str):
-    if raw is None:
-        return False, None, "Enter a guess."
-
-    if raw == "":
-        return False, None, "Enter a guess."
-
-    try:
-        if "." in raw:
-            value = int(float(raw))
-        else:
-            value = int(raw)
-    except Exception:
-        return False, None, "That is not a number."
-
-    return True, value, None
-
-
-def check_guess(guess, secret):
-    if guess == secret:
-        return "Win", "🎉 Correct!"
-
-    try:
-        if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
-        else:
-            return "Too Low", "📉 Go LOWER!"
-    except TypeError:
-        g = str(guess)
-        if g == secret:
-            return "Win", "🎉 Correct!"
-        if g > secret:
-            return "Too High", "📈 Go HIGHER!"
-        return "Too Low", "📉 Go LOWER!"
-
-
-def update_score(current_score: int, outcome: str, attempt_number: int):
-    if outcome == "Win":
-        points = 100 - 10 * (attempt_number + 1)
-        if points < 10:
-            points = 10
-        return current_score + points
-
-    if outcome == "Too High":
-        if attempt_number % 2 == 0:
-            return current_score + 5
-        return current_score - 5
-
-    if outcome == "Too Low":
-        return current_score - 5
-
-    return current_score
+# FIX: Refactored the game logic into logic_utils.py using Claude in agent mode,
+# so app.py only handles the UI and the logic can be unit tested directly.
+from logic_utils import (
+    check_guess,
+    get_range_for_difficulty,
+    parse_guess,
+    update_score,
+)
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
@@ -130,11 +76,22 @@ with col2:
     new_game = st.button("New Game 🔁")
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
-
+    
+# FIXME: Logic breaks here
+# FIX: I reported that "New Game" didn't actually let me play again unless I
+# cleared the cache. Claude traced it to the reset skipping "status", and I had
+# it reset every key the game reads (plus use the difficulty range for the
+# secret instead of a hardcoded 1-100).
 if new_game:
+    # Reset every key the game reads. Leaving "status" behind meant a finished
+    # game kept hitting st.stop() below, so Submit did nothing until the user
+    # cleared the cache (which wiped session_state for us).
+    st.session_state.secret = random.randint(low, high)
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
-    st.success("New game started.")
+    st.session_state.score = 0
+    st.session_state.status = "playing"
+    st.session_state.history = []
+    st.session_state.new_game_started = True
     st.rerun()
 
 if st.session_state.status != "playing":
@@ -154,11 +111,12 @@ if submit:
         st.error(err)
     else:
         st.session_state.history.append(guess_int)
-
-        if st.session_state.attempts % 2 == 0:
-            secret = str(st.session_state.secret)
-        else:
-            secret = st.session_state.secret
+        # FIXME: Logic breaks here
+        # FIX: Claude flagged that the secret was being cast to str on even
+        # attempts, making the comparison alphabetical  ("9" > "10"). I reviewed the suggested code that made
+        # the comparison  always an int.
+        
+        secret = st.session_state.secret
 
         outcome, message = check_guess(guess_int, secret)
 
@@ -188,4 +146,12 @@ if submit:
                 )
 
 st.divider()
+
+# FIX: The "New game started" banner never appeared. Claude explained that
+# st.rerun() discards the page the message was written to, so we moved the
+# banner behind a session_state flag that the next run reads and clears.
+
+if st.session_state.pop("new_game_started", False):
+    st.success("New game started!")
+
 st.caption("Built by an AI that claims this code is production-ready.")
