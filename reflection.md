@@ -67,5 +67,13 @@ Document at least 3 bugs you found. Add rows as needed.
 
 - What is one habit or strategy from this project that you want to reuse in future labs or projects?
   - This could be a testing habit, a prompting strategy, or a way you used Git.
+
+  The strategy I want to reuse is giving the AI a constraint, not just a goal. When I moved the four functions into `logic_utils.py`, I asked for a straight move with no behavior changes, so the diff stayed small enough for me to read. A vague "refactor this" would have let it rewrite logic I never asked it to touch. The more specific the constraint, the closer the first answer is to the one I actually wanted.
+
 - What is one thing you would do differently next time you work with AI on a coding task?
+
+  Next time I would ask the AI to explain the cause before it writes the fix. With the string cast I took the patch first and only understood it after I asked a follow-up question. Reading the reason first is what made the 9 vs 10 test make sense to me. I want the explanation to come before the code, not after it.
+
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+
+  The AI was far faster at producing a fix than I was, but it could not tell me the fix was right — only the test run and the game could do that. I treat its code as a strong starting point now: trust it enough to try, but always verify it myself.
