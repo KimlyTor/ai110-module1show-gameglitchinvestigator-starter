@@ -27,19 +27,34 @@ It wrote the code, ran away, and now the game is unplayable.
 
 - [X] Describe the game's purpose.
 
-      The Impossible Guesser is a Streamlit guessing game. The app picks a secret number. You try to guess it before your attempts run out. It tells you "higher" or "lower" after each guess, and tracks your score. As an assignment, its real purpose is to give you broken AI-written code to debug and refactor.
+  The Impossible Guesser is a Streamlit guessing game. The app picks a secret
+  number. You try to guess it before your attempts run out. It tells you
+  "higher" or "lower" after each guess, and tracks your score. As an
+  assignment, its real purpose is to give you broken AI-written code to debug
+  and refactor.
+
 - [X] Detail which bugs you found.
 
-      Bug 1: The hints were wrong. If the guess was 15 and the secret was 7, the hint said "Go HIGHER!" Every hint pushed the player away from the secret instead of toward it.
+  Bug 1: The hints were wrong. If the guess was 15 and the secret was 7, the
+  hint said "Go HIGHER!" Every hint pushed the player away from the secret
+  instead of toward it.
 
-      Bug 2: The "New Game" button did not start a new game. The secret number changed, but Submit did nothing until the cache was cleared.
+  Bug 2: The "New Game" button did not start a new game. The secret number
+  changed, but Submit did nothing until the cache was cleared.
 
-      Bug 3: Every game was one attempt short. On Hard, the sidebar said 5 attempts, but the game ended after 4. The same thing happened on Easy and Normal.
+  Bug 3: Every game was one attempt short. On Hard, the sidebar said 5
+  attempts, but the game ended after 4. The same thing happened on Easy and
+  Normal.
+
 - [X] Explain what fixes you applied.
 
-      Bug 1: The hint messages in `check_guess` were swapped, so "Too High" now says "Go LOWER!" A string cast in `app.py` was also removed, so guesses are always compared as numbers. Regression tests were added.
+  Bug 1: The hint messages in `check_guess` were swapped, so "Too High" now
+  says "Go LOWER!" A string cast in `app.py` was also removed, so guesses are
+  always compared as numbers. Regression tests were added.
 
-      Bug 2: "New Game" now resets every key the game reads, not just `secret` and `attempts`. The leftover `status` was what blocked Submit. The new secret is also drawn from the current difficulty range.
+  Bug 2: "New Game" now resets every key the game reads, not just `secret` and
+  `attempts`. The leftover `status` was what blocked Submit. The new secret is
+  also drawn from the current difficulty range.
 
 ## 📸 Demo Walkthrough
 
