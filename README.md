@@ -54,7 +54,7 @@ Describe your fixed game in numbered steps so a reader can follow along without 
 
 **Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
 
-![A screenshot of a winning game](https://drive.google.com/file/d/1sY9HWgHggpSWCCN6DmPnUZylhiQa0CHv/view?usp=sharing)
+![A screenshot of a winning game](project1_img.jpg)
 
 ## 🧪 Test Results
 
